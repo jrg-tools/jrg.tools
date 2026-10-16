@@ -82,11 +82,23 @@
 
 {#snippet details(project: (typeof PROJECTS)[number])}
 	<p class="text-sm font-semibold tracking-widest text-yellow-500 uppercase">
-		{project.kind === 'hardware' ? 'Printed · soldered · flashed' : 'Web app'}
+		{project.kind === 'hardware'
+			? 'Printed · soldered · flashed'
+			: project.ai
+				? 'Web app · self-hosted AI'
+				: 'Web app'}
 	</p>
 	<h2 class="mt-2 text-3xl font-bold">{project.name}</h2>
 	<p class="mt-1 text-lg font-medium text-zinc-500">{project.tagline}</p>
 	<p class="mt-4 text-zinc-700 dark:text-zinc-300">{project.summary}</p>
+	{#if project.ai}
+		<p
+			class="mt-4 rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300"
+		>
+			<span class="font-semibold text-yellow-600 dark:text-yellow-500">Self-hosted AI.</span>
+			{project.ai}
+		</p>
+	{/if}
 	<ul class="mt-5 space-y-2 text-zinc-600 dark:text-zinc-400">
 		{#each project.features as feature (feature)}
 			<li class="flex gap-3">

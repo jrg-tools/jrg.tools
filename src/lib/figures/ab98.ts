@@ -343,7 +343,7 @@ export function ab98(azimuth = -56, elevation = 30): Figure {
 			L(k.sideSeam(CASE, H - 0.8, P, 8), { tone: 'faint' }),
 			sides
 		].join('');
-		const body = p.holed(CASE, WALL, H, [WINDOW], FRONT, { tone: 'hi', inner });
+		const body = p.holed(CASE, WALL, H, [WINDOW], FRONT, { tone: 'hi', inner }, WALL);
 		// The four key caps stand 2 mm out of the top edge, low down near the lid; hidden by the shell when that wall faces away.
 		const keys = KEYS.map((x, i) => {
 			const glyph = ['‹‹', '›‖', '››', '≡'][i];

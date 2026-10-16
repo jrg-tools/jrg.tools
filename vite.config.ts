@@ -14,13 +14,7 @@ export default defineConfig({
 			},
 
 			// adapter-node: a standalone Node server, run by the Docker image deployed on Dokploy.
-			adapter: adapter(),
-
-			typescript: {
-				config: (config) => {
-					config.include.push('../drizzle.config.ts');
-				}
-			}
+			adapter: adapter()
 		})
 	]
 });

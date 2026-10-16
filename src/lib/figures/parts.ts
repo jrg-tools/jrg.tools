@@ -425,8 +425,9 @@ export function parts(P: Projection, id: string) {
 	}
 
 	/**
-	 * A slab from z to top with openings cut through its top face, so whatever lies below shows through.
-	 * Each opening is `depth` deep; its far walls are shaded and clipped by its rim.
+	 * A printed shell from z to top, open underneath, with openings cut through its top face so whatever
+	 * lies below shows through. Each opening is `depth` deep (the roof); its far walls are shaded and
+	 * clipped by its rim. From below it shows its inside: the rim, the inner walls and the ceiling.
 	 */
 	function holed(
 		plan: Plan,
@@ -434,10 +435,30 @@ export function parts(P: Projection, id: string) {
 		top: number,
 		holes: Plan[],
 		depth: number,
-		style: k.SolidStyle = {}
+		style: k.SolidStyle = {},
+		wall = depth
 	) {
 		const paths = k.slabOf(plan, z, top - z, P, 8, 0.8);
-		if (below) return { svg: S(paths, style), fill: paths.fill };
+		if (below) {
+			const ring = k.ringOf(k.insetPlan(plan, wall), 8);
+			const mouth = beneath(ring, z, true);
+			const c = clipId();
+			const inside = [
+				`<clipPath id="${c}"><path d="${mouth}"/></clipPath>`,
+				`<g clip-path="url(#${c})">`,
+				`<path class="iso-shade" data-shade="1" d="${mouth}"/>`,
+				`<path class="iso-top" d="${beneath(ring, top - depth, true)}"/>`,
+				holes
+					.map((h) => {
+						const d = beneath(k.ringOf(h, 4), top - depth, true);
+						return `<path class="iso-shade" data-shade="0" d="${d}"/>` + L(d, { tone: 'mid' });
+					})
+					.join(''),
+				'</g>',
+				L(mouth, { tone: 'mid' })
+			].join('');
+			return { svg: S(paths, style) + inside, fill: paths.fill };
+		}
 		const rings = holes.map((h) => k.onTop(k.ringOf(h, 4), top, P, true)).join('');
 		const body = S({ ...paths, fill: paths.fill + rings, top: paths.top + rings }, style).replace(
 			/class="iso-(fill|top)"/g,

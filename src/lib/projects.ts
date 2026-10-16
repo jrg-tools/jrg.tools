@@ -8,6 +8,8 @@ export interface Project {
 	summary: string;
 	features: string[];
 	stack: string[];
+	/** For apps whose AI runs on my own hardware: what runs and where. */
+	ai?: string;
 	/** Key into the anatomy figures, for builds that were printed and soldered. */
 	figure?: 'ab98' | 'mayanhcu' | 'inkbridge';
 }
@@ -74,10 +76,11 @@ export const PROJECTS: Project[] = [
 		features: [
 			'Live co-editing with presence and comments',
 			'Expenses with shares, settlements and currency rates',
-			'AI helpers: organise notes, read bookings and receipts',
+			'Local AI: organise notes, read bookings and receipts',
 			'Trip PDF and offline reading'
 		],
-		stack: ['SvelteKit', 'Svelte 5', 'SQLite', 'Drizzle', 'Yjs']
+		stack: ['SvelteKit', 'Svelte 5', 'SQLite', 'Drizzle', 'Yjs', 'Ollama'],
+		ai: 'Every AI feature runs on a small Qwen 3.5 model on my own server (Ollama behind Open WebUI). Bookings, receipts and plans never leave the house.'
 	},
 	{
 		id: 'tree',
@@ -90,9 +93,11 @@ export const PROJECTS: Project[] = [
 			'Navigable graph from any person',
 			'Approximate and ranged genealogical dates',
 			'Audit log with one-click restore',
-			'GEDCOM 5.5.1 and 7.0 import and export'
+			'GEDCOM 5.5.1 and 7.0 import and export',
+			'Ask about the family in a chat, through an MCP server'
 		],
-		stack: ['SvelteKit', 'SQLite', 'Drizzle', 'GEDCOM']
+		stack: ['SvelteKit', 'SQLite', 'Drizzle', 'GEDCOM', 'MCP', 'Ollama'],
+		ai: 'The family chat runs on a local model (Ollama behind Open WebUI) reading the tree through MCP, so living relatives stay in the house.'
 	},
 	{
 		id: 'revelado',
@@ -107,7 +112,8 @@ export const PROJECTS: Project[] = [
 			'Before and after compare slider',
 			'Version history for every edit'
 		],
-		stack: ['SvelteKit', 'ComfyUI', 'Qwen-Image-Edit', 'Docker']
+		stack: ['SvelteKit', 'ComfyUI', 'Qwen-Image-Edit', 'Docker'],
+		ai: 'Photos are developed by Qwen-Image-Edit in ComfyUI on my own GPU. No photo is sent to a cloud service.'
 	},
 	{
 		id: 'eink-card',
