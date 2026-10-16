@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+@import '../lib/iso/iso.css';
+
+@theme {
+	--font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+	scroll-behavior: smooth;
+	@apply bg-zinc-50 text-black dark:bg-zinc-950 dark:text-white;
+}
