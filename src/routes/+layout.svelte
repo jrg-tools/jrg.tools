@@ -2,7 +2,7 @@
 	import { resolve } from '$app/paths';
 	import './layout.css';
 
-	let { children } = $props();
+	let { children, data } = $props();
 	const year = new Date().getFullYear();
 	// Scroll-driven CSS animations don't run in Safari or Firefox, so the header follows scrollY instead.
 	let scrollY = $state(0);
@@ -30,7 +30,7 @@
 		<div class="mx-auto flex max-w-7xl items-center">
 			<a href={resolve('/')} class="flex flex-row items-center gap-2">
 				<img src="/logo.webp" class="w-9" alt="" />
-				<span class="text-xl font-bold whitespace-nowrap">JRG Tools</span>
+				<span class="text-xl font-bold whitespace-nowrap">{data.brand}</span>
 			</a>
 		</div>
 	</header>

@@ -5,6 +5,7 @@
 	import { mayanhcu } from '$lib/figures/mayanhcu';
 	import { PROJECTS } from '$lib/projects';
 
+	let { data } = $props();
 	const figures = { ab98, mayanhcu, inkbridge };
 	const years = [...new Set(PROJECTS.map((p) => p.year))].sort((a, b) => b - a);
 	let year = $state<number | null>(null);
@@ -58,11 +59,13 @@
 </script>
 
 <svelte:head>
-	<title>JRG Tools · Projects</title>
+	<title>{data.brand} · Projects</title>
 	<meta
 		name="description"
 		content="Things Jorge has been building: pocket devices, printed and soldered by hand, and web apps."
 	/>
+	<meta property="og:image" content="{data.origin}/og.png" />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <section class="mx-auto max-w-5xl px-4 pt-8 pb-16 sm:px-6">

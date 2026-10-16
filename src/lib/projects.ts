@@ -16,6 +16,7 @@ export interface Project {
 	figure?: 'ab98' | 'mayanhcu' | 'inkbridge';
 }
 
+/** Newest first: the first one is the link-preview image (`pnpm og`). */
 export const PROJECTS: Project[] = [
 	{
 		id: 'ab98',
