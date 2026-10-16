@@ -5,6 +5,8 @@ export interface Project {
 	name: string;
 	tagline: string;
 	kind: Kind;
+	/** The year it was made, for the year filter. */
+	year: number;
 	summary: string;
 	features: string[];
 	stack: string[];
@@ -20,6 +22,7 @@ export const PROJECTS: Project[] = [
 		name: 'AB98',
 		tagline: 'A pocket music player shaped like a cassette Walkman',
 		kind: 'hardware',
+		year: 2026,
 		summary:
 			'Plays music from a micro SD card through a headphone jack, with a little cassette on screen whose reels turn while a song plays. When you want new music it joins your Wi-Fi, or starts its own hotspot, and serves a web page styled as the same Walkman to manage the card.',
 		features: [
@@ -37,6 +40,7 @@ export const PROJECTS: Project[] = [
 		name: 'Máy Anh Cũ',
 		tagline: 'A tiny film camera with a web darkroom',
 		kind: 'hardware',
+		year: 2026,
 		summary:
 			'A camera, and a film emulator, built around a thumb-sized ESP32-S3 with an OV2640 sensor. Load a roll of a film stock, shoot frame by frame through a live viewfinder, then browse and download the rolls from a page the camera serves itself.',
 		features: [
@@ -54,6 +58,7 @@ export const PROJECTS: Project[] = [
 		name: 'inkbridge',
 		tagline: 'An always-on Home Assistant launcher on e-ink',
 		kind: 'hardware',
+		year: 2026,
 		summary:
 			'Two mechanical keys and a 2.13" e-paper screen with a grid of icon buttons, each one a Home Assistant script. Press one and it runs. Everything is configured from a web page the device serves, and it naps in light sleep between presses for weeks on a charge.',
 		features: [
@@ -71,6 +76,7 @@ export const PROJECTS: Project[] = [
 		name: 'Trip',
 		tagline: 'A family trip planner everyone edits together',
 		kind: 'web',
+		year: 2026,
 		summary:
 			'One shared page per trip where plans, lists, photos and documents live under their day, edited live by the whole family. A budget splits expenses across currencies, an assistant turns a brainstorm or a booking into events, and the whole trip prints as a PDF that also works offline.',
 		features: [
@@ -87,6 +93,7 @@ export const PROJECTS: Project[] = [
 		name: 'Generations',
 		tagline: 'A family tree you can walk in any direction',
 		kind: 'web',
+		year: 2026,
 		summary:
 			"A genealogy app that loads a person's whole family neighbourhood at once, ancestors, descendants, partners and siblings, and lets you keep walking from any relative without reloading. Writers edit with care: precise genealogical dates, a full audit trail with restore, and GEDCOM in and out.",
 		features: [
@@ -104,6 +111,7 @@ export const PROJECTS: Project[] = [
 		name: 'Revelado',
 		tagline: 'A darkroom that develops photos with AI',
 		kind: 'web',
+		year: 2026,
 		summary:
 			'Upload a photo, pick a film stock or describe the change you want, and an image-editing model develops it. Paint a mask to edit only part of the frame, compare before and after with a slider, and step back through every version.',
 		features: [
@@ -120,6 +128,7 @@ export const PROJECTS: Project[] = [
 		name: 'E-ink Card',
 		tagline: 'A business card for an e-ink reader',
 		kind: 'web',
+		year: 2026,
 		summary:
 			'Design a minimal business card for Xteink e-readers, preview it exactly as the e-ink panel will show it, and send it straight to the device over the local network, where it becomes the sleep screen. Everything renders in the browser; nothing leaves your phone except the upload to your own reader.',
 		features: [

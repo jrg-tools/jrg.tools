@@ -6,8 +6,11 @@
 	import { PROJECTS } from '$lib/projects';
 
 	const figures = { ab98, mayanhcu, inkbridge };
-	const hardware = PROJECTS.filter((p) => p.kind === 'hardware');
-	const web = PROJECTS.filter((p) => p.kind === 'web');
+	const years = [...new Set(PROJECTS.map((p) => p.year))].sort((a, b) => b - a);
+	let year = $state<number | null>(null);
+	const shown = $derived(year === null ? PROJECTS : PROJECTS.filter((p) => p.year === year));
+	const hardware = $derived(shown.filter((p) => p.kind === 'hardware'));
+	const web = $derived(shown.filter((p) => p.kind === 'web'));
 
 	// Tree illustration: three generations around one selected person.
 	const people = [
@@ -68,13 +71,52 @@
 	<p class="mt-5 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
 		Small devices, printed and soldered on my desk, and web apps for the people around me.
 	</p>
-	<nav class="mt-8 flex flex-wrap gap-2" aria-label="Projects">
-		{#each PROJECTS as project (project.id)}
+	<div class="mt-8 flex flex-wrap items-center gap-1" role="group" aria-label="Filter by year">
+		{#each [null, ...years] as y (y)}
+			<button
+				type="button"
+				aria-pressed={year === y}
+				onclick={() => (year = y)}
+				class="rounded-md px-3 py-1 text-sm font-semibold text-zinc-500 transition-colors duration-300 hover:text-black aria-pressed:bg-yellow-500/15 aria-pressed:text-yellow-600 dark:hover:text-white dark:aria-pressed:text-yellow-500"
+			>
+				{y ?? 'All'}
+			</button>
+		{/each}
+	</div>
+	<nav class="mt-4 flex flex-wrap gap-2" aria-label="Projects">
+		{#each shown as project (project.id)}
 			<a
 				href="#{project.id}"
-				class="rounded-full border border-zinc-200 px-4 py-1.5 text-sm font-semibold transition-colors duration-300 hover:border-yellow-500 dark:border-zinc-800"
+				class="inline-flex items-center gap-2 rounded-full border border-zinc-200 px-4 py-1.5 text-sm font-semibold transition-colors duration-300 hover:border-yellow-500 dark:border-zinc-800"
 			>
+				{#if project.kind === 'hardware'}
+					<!-- Lucide "cpu" -->
+					<svg
+						class="h-4 w-4 text-yellow-600 dark:text-yellow-500"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						role="img"
+						aria-label="Hardware"
+						><title>Hardware</title><rect x="4" y="4" width="16" height="16" rx="2" /><rect
+							x="9"
+							y="9"
+							width="6"
+							height="6"
+							rx="1"
+						/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" /></svg
+					>
+				{/if}
 				{project.name}
+				{#if project.ai}
+					<span
+						class="rounded-full bg-yellow-500/15 px-1.5 py-px text-[10px] font-bold tracking-wider text-yellow-600 dark:text-yellow-500"
+						title="Self-hosted AI">AI</span
+					>
+				{/if}
 			</a>
 		{/each}
 	</nav>
@@ -82,7 +124,7 @@
 
 {#snippet details(project: (typeof PROJECTS)[number])}
 	<p class="text-sm font-semibold tracking-widest text-yellow-500 uppercase">
-		{project.kind === 'hardware'
+		{project.year} · {project.kind === 'hardware'
 			? 'Printed · soldered · flashed'
 			: project.ai
 				? 'Web app · self-hosted AI'
