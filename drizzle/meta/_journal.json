@@ -29,6 +29,13 @@
 			"when": 1792486616566,
 			"tag": "0003_steps",
 			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "6",
+			"when": 1792533119532,
+			"tag": "0004_seed",
+			"breakpoints": true
 		}
 	]
 }

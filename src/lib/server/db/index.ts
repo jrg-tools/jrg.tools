@@ -3,7 +3,7 @@ import { asc, desc, eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import { env } from '$env/dynamic/private';
-import { HEADER, PROJECTS, type Header, type Project } from '$lib/projects';
+import type { Header, Project } from '$lib/projects';
 import * as schema from './schema';
 
 // The same pragmas as jrg-life: WAL so reads don't wait for writes.
@@ -23,15 +23,8 @@ sqlite.pragma('synchronous = NORMAL');
 const db = drizzle(sqlite, { schema });
 const { projects, settings } = schema;
 
-// Pending migrations (./drizzle) are applied at start; the first run gets the projects from the code.
+// Pending migrations (./drizzle) are applied at start; 0004_seed fills an empty database once.
 migrate(db, { migrationsFolder: 'drizzle' });
-if (!db.select().from(projects).limit(1).get()) {
-	const now = Date.now();
-	// Distinct times, so the list keeps the seed's order (newest first).
-	db.insert(projects)
-		.values(PROJECTS.map((p, i) => ({ ...p, createdAt: new Date(now - i) })))
-		.run();
-}
 
 export const listProjects = (): Promise<(Project & { position: number })[]> =>
 	db
@@ -58,10 +51,10 @@ export async function deleteProject(id: string) {
 	await db.delete(projects).where(eq(projects.id, id));
 }
 
-/** The saved header, field by field over the defaults. */
+/** The saved header (blank if its row was removed). */
 export function getHeader(): Header {
 	const saved = db.select().from(settings).where(eq(settings.key, 'header')).get()?.value;
-	return { ...HEADER, ...(saved as Partial<Header>) };
+	return { eyebrow: '', title: '', intro: '', ...(saved as Partial<Header>) };
 }
 
 export function saveHeader(value: Header) {
