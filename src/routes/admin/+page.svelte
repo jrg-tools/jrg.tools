@@ -38,19 +38,19 @@
 
 <svelte:head><title>Admin · {data.brand}</title></svelte:head>
 
-<nav class="mx-auto flex max-w-7xl gap-1 px-4 pt-4 sm:px-6" aria-label="Admin">
+<nav class="mx-auto flex max-w-7xl gap-1 px-4 pt-4 sm:px-6 sm:pt-6" aria-label="Admin">
 	{#each [['projects', 'Projects'], ['header', 'Page header']] as [key, label] (key)}
 		<a
 			href="{resolve('/admin')}{key === 'projects' ? '' : `?tab=${key}`}"
 			aria-current={tab === key ? 'page' : undefined}
-			class="rounded-md px-3 py-1 text-sm font-semibold text-zinc-500 transition-colors duration-300 hover:text-black aria-[current=page]:bg-yellow-500/15 aria-[current=page]:text-yellow-600 dark:hover:text-white dark:aria-[current=page]:text-yellow-500"
+			class="rounded-md px-3 py-2 text-sm font-semibold text-zinc-500 transition-colors duration-300 hover:text-black aria-[current=page]:bg-yellow-500/15 aria-[current=page]:text-yellow-600 dark:hover:text-white dark:aria-[current=page]:text-yellow-500"
 			>{label}</a
 		>
 	{/each}
 </nav>
 
 {#if tab === 'header'}
-	<section class="mx-auto max-w-3xl px-4 pt-6 pb-20 sm:px-6">
+	<section class="mx-auto max-w-3xl px-4 pt-4 pb-20 sm:px-6 sm:pt-6">
 		<form method="POST" action="?/header" use:enhance class="space-y-3">
 			<h1 class="sr-only">Page header</h1>
 			<div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
@@ -68,17 +68,20 @@
 				<textarea name="intro" rows="2" class="field resize-y">{data.header.intro}</textarea>
 			</label>
 			<button
-				class="rounded-full bg-yellow-400 px-6 py-2.5 font-semibold text-zinc-950 transition hover:bg-yellow-300"
+				class="w-full rounded-full bg-yellow-400 px-6 py-2.5 font-semibold text-zinc-950 transition hover:bg-yellow-300 sm:w-auto"
 				>Save header</button
 			>
 			{#if form?.headerSaved}
-				<span class="ml-3 text-sm font-semibold text-emerald-600" role="status">Saved.</span>
+				<span
+					class="mt-2 block text-sm font-semibold text-emerald-600 sm:mt-0 sm:ml-3 sm:inline"
+					role="status">Saved.</span
+				>
 			{/if}
 		</form>
 	</section>
 {:else}
 	<div
-		class="mx-auto grid max-w-7xl gap-10 px-4 pt-6 pb-20 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+		class="mx-auto grid max-w-7xl gap-10 px-4 pt-4 pb-20 sm:px-6 sm:pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
 	>
 		<section>
 			<h1 class="sr-only">{p ? `Edit ${p.name}` : 'New project'}</h1>
@@ -285,15 +288,15 @@
 			</p>
 			<p class="truncate text-xs text-zinc-500">{project.year} · {project.tagline}</p>
 		</div>
-		<div class="flex">
+		<div class="-mx-3 flex w-full justify-end sm:mx-0 sm:w-auto">
 			<a
 				href="{resolve('/')}#{project.id}"
-				class="rounded-full px-3 py-1 text-sm font-semibold hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60"
+				class="rounded-full px-3 py-2 text-sm font-semibold hover:bg-zinc-200/60 sm:py-1 dark:hover:bg-zinc-800/60"
 				>View</a
 			>
 			<a
 				href="{resolve('/admin')}?edit={project.id}"
-				class="rounded-full px-3 py-1 text-sm font-semibold hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60"
+				class="rounded-full px-3 py-2 text-sm font-semibold hover:bg-zinc-200/60 sm:py-1 dark:hover:bg-zinc-800/60"
 				>Edit</a
 			>
 			<form
@@ -305,7 +308,7 @@
 			>
 				<input type="hidden" name="id" value={project.id} />
 				<button
-					class="rounded-full px-3 py-1 text-sm font-semibold text-red-600 hover:bg-red-500/10"
+					class="rounded-full px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-500/10 sm:py-1"
 					>Delete</button
 				>
 			</form>

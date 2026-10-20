@@ -24,18 +24,18 @@
 <ClerkProvider>
 	<div class="flex min-h-screen flex-col">
 		<header
-			class="fixed top-0 z-50 w-full px-6 py-4 transition-[background-color,backdrop-filter] duration-300 select-none {scrollY >
+			class="fixed top-0 z-50 w-full px-4 py-3 transition-[background-color,backdrop-filter] duration-300 select-none sm:px-6 sm:py-4 {scrollY >
 			8
 				? 'bg-zinc-50/70 backdrop-blur-md dark:bg-zinc-950/70'
 				: ''}"
 		>
 			<div class="mx-auto flex max-w-7xl items-center">
-				<a href={resolve('/')} class="flex flex-row items-center gap-2">
-					<img src="/logo.webp" class="w-9" alt="" />
-					<span class="text-xl font-bold whitespace-nowrap">{data.brand}</span>
+				<a href={resolve('/')} class="flex min-w-0 flex-row items-center gap-2">
+					<img src="/logo.webp" class="w-8 shrink-0 sm:w-9" alt="" />
+					<span class="truncate text-lg font-bold sm:text-xl">{data.brand}</span>
 				</a>
 				{#if data.signedIn}
-					<div class="ml-auto flex items-center gap-3">
+					<div class="ml-auto flex shrink-0 items-center gap-2 pl-2 sm:gap-3">
 						{#if data.isAdmin}
 							<a
 								href={resolve('/admin')}
@@ -49,12 +49,12 @@
 			</div>
 		</header>
 
-		<main class="mt-24 flex-grow">
+		<main class="mt-20 flex-grow sm:mt-24">
 			{@render children()}
 		</main>
 
 		<footer class="bg-zinc-100/20 select-none dark:bg-zinc-900/30">
-			<div class="mx-auto w-full max-w-screen-xl px-6 py-6 lg:py-8">
+			<div class="mx-auto w-full max-w-screen-xl px-4 py-6 sm:px-6 lg:py-8">
 				<hr class="mb-6 border-zinc-200/60 lg:mb-8 dark:border-zinc-800/60" />
 				<span class="text-sm text-zinc-300 dark:text-zinc-700">
 					&copy; JRG Tools - Jorge 2013 - {year}
