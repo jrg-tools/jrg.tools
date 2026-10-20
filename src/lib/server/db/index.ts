@@ -7,7 +7,16 @@ import { HEADER, PROJECTS, type Header, type Project } from '$lib/projects';
 import * as schema from './schema';
 
 // The same pragmas as jrg-life: WAL so reads don't wait for writes.
-const sqlite = new Database(env.DATABASE_URL || 'local.db');
+const path = env.DATABASE_URL || 'local.db';
+let sqlite: Database.Database;
+try {
+	sqlite = new Database(path);
+} catch (cause) {
+	// The usual cause in Docker: the mounted folder belongs to root, and the app runs as `node` (uid 1000).
+	throw new Error(`Cannot open the database ${path}: is its folder writable by uid 1000?`, {
+		cause
+	});
+}
 sqlite.pragma('journal_mode = WAL');
 sqlite.pragma('busy_timeout = 5000');
 sqlite.pragma('synchronous = NORMAL');

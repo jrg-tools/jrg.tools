@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Debian (glibc) + Node 26, pnpm from `packageManager` via corepack (as in jrg-life).
-FROM node:26-bookworm-slim AS base
+# Debian (glibc) + Node 24, pnpm from `packageManager` via corepack (as in jrg-life).
+FROM node:24-bookworm-slim AS base
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
@@ -10,8 +10,11 @@ FROM base AS build
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 	pnpm install --frozen-lockfile --store-dir /pnpm/store
 COPY . .
-# The build loads the server code, which opens the database: a throwaway one in memory.
-RUN DATABASE_URL=:memory: pnpm run build
+# SvelteKit 3 validates the variables in src/env.ts while building: placeholders, never inlined.
+RUN DATABASE_URL=:memory: \
+	CLERK_SECRET_KEY=build-placeholder \
+	PUBLIC_CLERK_PUBLISHABLE_KEY=build-placeholder \
+	pnpm run build
 
 # adapter-node bundles `devDependencies`; only the native better-sqlite3 is installed here.
 FROM base AS prod-deps
@@ -19,7 +22,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 	pnpm install --frozen-lockfile --prod --store-dir /pnpm/store \
 	&& mkdir -p /app/db
 
-FROM node:26-bookworm-slim AS runtime
+FROM node:24-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
 	PORT=80 \
@@ -36,7 +39,5 @@ COPY package.json ./
 COPY --from=prod-deps --chown=node:node /app/db ./db
 VOLUME ["/app/db"]
 
-# Non-root like jrg-life; Docker lets unprivileged users bind port 80 inside the container.
-USER node
 EXPOSE 80
 CMD ["build/index.js"]
