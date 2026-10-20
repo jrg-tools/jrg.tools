@@ -9,3 +9,15 @@ html {
 	scroll-behavior: smooth;
 	@apply bg-zinc-50 text-black dark:bg-zinc-950 dark:text-white;
 }
+
+.field {
+	@apply w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-base transition outline-none focus:border-yellow-500 focus:ring-4 focus:ring-yellow-400/20 aria-invalid:border-red-500 sm:text-sm dark:border-zinc-800 dark:bg-zinc-900;
+}
+
+/* The project figures, a little shorter than the iso kit's defaults (iso.css is vendored, so not edited). */
+.iso .iso-plate {
+	padding-block: 44px;
+}
+.iso .iso-svg {
+	max-height: 30rem;
+}

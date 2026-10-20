@@ -3,15 +3,19 @@
 	import { ab98 } from '$lib/figures/ab98';
 	import { inkbridge } from '$lib/figures/inkbridge';
 	import { mayanhcu } from '$lib/figures/mayanhcu';
-	import { PROJECTS } from '$lib/projects';
+	import { label, type Project } from '$lib/projects';
 
 	let { data } = $props();
-	const figures = { ab98, mayanhcu, inkbridge };
-	const years = [...new Set(PROJECTS.map((p) => p.year))].sort((a, b) => b - a);
+	const figures = { ab98, mayanhcu, inkbridge } as const;
+	const isFigure = (art: Project['art']): art is keyof typeof figures => !!art && art in figures;
+	const years = $derived([...new Set(data.projects.map((p) => p.year))].sort((a, b) => b - a));
 	let year = $state<number | null>(null);
-	const shown = $derived(year === null ? PROJECTS : PROJECTS.filter((p) => p.year === year));
-	const hardware = $derived(shown.filter((p) => p.kind === 'hardware'));
-	const web = $derived(shown.filter((p) => p.kind === 'web'));
+	const shown = $derived(
+		year === null ? data.projects : data.projects.filter((p) => p.year === year)
+	);
+	/** Unfiltered, the favorites sit on top, so the rest leaves them out. */
+	const favorites = $derived(year === null ? shown.filter((p) => p.featured) : []);
+	const rest = $derived(shown.filter((p) => !favorites.includes(p)));
 
 	// Tree illustration: three generations around one selected person.
 	const people = [
@@ -68,12 +72,21 @@
 	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
-<section class="mx-auto max-w-5xl px-4 pt-8 pb-16 sm:px-6">
-	<p class="text-sm font-semibold tracking-widest text-yellow-500 uppercase">Projects</p>
-	<h1 class="mt-3 text-4xl font-bold sm:text-5xl">What I've been building</h1>
-	<p class="mt-5 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-		Small devices, printed and soldered on my desk, and web apps for the people around me.
-	</p>
+<section class="mx-auto max-w-5xl px-4 pt-8 pb-4 sm:px-6">
+	<!-- An empty field in /admin leaves its line out. -->
+	{#if data.header.eyebrow}
+		<p class="text-sm font-semibold tracking-widest text-yellow-500 uppercase">
+			{data.header.eyebrow}
+		</p>
+	{/if}
+	{#if data.header.title}
+		<h1 class="mt-3 text-4xl font-bold first:mt-0 sm:text-5xl">{data.header.title}</h1>
+	{/if}
+	{#if data.header.intro}
+		<p class="mt-5 max-w-2xl text-lg text-zinc-600 first:mt-0 dark:text-zinc-400">
+			{data.header.intro}
+		</p>
+	{/if}
 	<div class="mt-8 flex flex-wrap items-center gap-1" role="group" aria-label="Filter by year">
 		{#each [null, ...years] as y (y)}
 			<button
@@ -114,6 +127,7 @@
 					>
 				{/if}
 				{project.name}
+				{#if project.featured}<span class="text-yellow-500" title="Favorite">★</span>{/if}
 				{#if project.ai}
 					<span
 						class="rounded-full bg-yellow-500/15 px-1.5 py-px text-[10px] font-bold tracking-wider text-yellow-600 dark:text-yellow-500"
@@ -125,17 +139,13 @@
 	</nav>
 </section>
 
-{#snippet details(project: (typeof PROJECTS)[number])}
+{#snippet details(project: Project)}
 	<p class="text-sm font-semibold tracking-widest text-yellow-500 uppercase">
-		{project.year} · {project.kind === 'hardware'
-			? 'Printed · soldered · flashed'
-			: project.ai
-				? 'Web app · self-hosted AI'
-				: 'Web app'}
+		{label(project)}
 	</p>
 	<h2 class="mt-2 text-3xl font-bold">{project.name}</h2>
-	<p class="mt-1 text-lg font-medium text-zinc-500">{project.tagline}</p>
-	<p class="mt-4 text-zinc-700 dark:text-zinc-300">{project.summary}</p>
+	{#if project.tagline}<p class="mt-1 text-lg font-medium text-zinc-500">{project.tagline}</p>{/if}
+	{#if project.summary}<p class="mt-4 text-zinc-700 dark:text-zinc-300">{project.summary}</p>{/if}
 	{#if project.ai}
 		<p
 			class="mt-4 rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300"
@@ -151,7 +161,7 @@
 			</li>
 		{/each}
 	</ul>
-	<div class="mt-5 flex flex-wrap gap-2">
+	<div class="mt-auto flex flex-wrap gap-2 pt-5">
 		{#each project.stack as item (item)}
 			<span
 				class="rounded-md bg-zinc-100 px-2 py-1 text-xs font-semibold text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400"
@@ -162,31 +172,34 @@
 	</div>
 {/snippet}
 
-{#each hardware as project (project.id)}
+{#snippet hardwareRow(project: Project)}
 	<section id={project.id} class="mx-auto max-w-5xl scroll-mt-24 px-4 py-12 sm:px-6">
 		<div class="grid gap-x-12 gap-y-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:items-center">
 			<div>{@render details(project)}</div>
 			<div class="iso">
-				{#if project.figure}<Anatomy
-						build={figures[project.figure]}
-						azimuth={project.figure === 'inkbridge' ? -50 : -56}
+				{#if isFigure(project.art)}<Anatomy
+						build={figures[project.art]}
+						azimuth={project.art === 'inkbridge' ? -50 : -56}
+					/>{:else if project.image}<img
+						src={project.image}
+						alt=""
+						class="w-full rounded-2xl"
 					/>{/if}
 			</div>
 		</div>
 	</section>
-{/each}
+{/snippet}
 
-<section class="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2">
-	{#each web as project (project.id)}
-		<article
-			id={project.id}
-			class="scroll-mt-24 overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/40"
-		>
-			<div
+{#snippet webCard(project: Project)}
+	<article
+		id={project.id}
+		class="flex scroll-mt-24 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/40"
+	>
+		{#if project.art || project.image}<div
 				class="border-b border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-950/60"
 				aria-hidden="true"
 			>
-				{#if project.id === 'trip'}
+				{#if project.art === 'trip'}
 					<div class="space-y-3 text-sm">
 						{#each [['Day 1 · Kyoto', ['Fushimi Inari', 'Nishiki market']], ['Day 2 · Nara', ['Deer park', 'Tōdai-ji']]] as [day, events] (day)}
 							<div>
@@ -216,7 +229,7 @@
 							<span class="text-xs text-zinc-500">¥ 84,200 / 140,000</span>
 						</div>
 					</div>
-				{:else if project.id === 'revelado'}
+				{:else if project.art === 'revelado'}
 					<div class="mx-auto max-w-sm">
 						<!-- Before / after: the same scene, flat on the left, developed on the right. -->
 						<svg viewBox="0 0 360 200" class="block w-full overflow-hidden rounded-xl">
@@ -257,7 +270,7 @@
 							{/each}
 						</div>
 					</div>
-				{:else if project.id === 'eink-card'}
+				{:else if project.art === 'eink-card'}
 					<div class="mx-auto flex max-w-sm items-center justify-center gap-5">
 						<!-- An Xteink reader showing the card as its sleep screen. -->
 						<svg viewBox="0 0 150 230" class="block w-36 shrink-0">
@@ -305,7 +318,7 @@
 							>
 						</div>
 					</div>
-				{:else}
+				{:else if project.art === 'tree'}
 					<svg viewBox="0 0 360 246" class="mx-auto block w-full max-w-sm">
 						{#each bonds as [a, b] (`${a}-${b}`)}
 							<path
@@ -344,9 +357,37 @@
 							/>
 						{/each}
 					</svg>
+				{:else if project.image}
+					<img src={project.image} alt="" class="mx-auto block max-h-64 rounded-xl" />
 				{/if}
-			</div>
-			<div class="p-6">{@render details(project)}</div>
-		</article>
+			</div>{/if}
+		<div class="flex flex-1 flex-col p-6">{@render details(project)}</div>
+	</article>
+{/snippet}
+
+<!-- Hardware as full rows, then web apps as a grid of cards: the same for favorites and the rest. -->
+{#snippet block(list: Project[])}
+	{#each list.filter((p) => p.kind === 'hardware') as project (project.id)}
+		{@render hardwareRow(project)}
 	{/each}
-</section>
+	{#if list.some((p) => p.kind === 'web')}
+		<section class="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2">
+			{#each list.filter((p) => p.kind === 'web') as project (project.id)}
+				{@render webCard(project)}
+			{/each}
+		</section>
+	{/if}
+{/snippet}
+
+{#snippet heading(label: string)}
+	<div class="mx-auto max-w-5xl px-4 pt-8 sm:px-6">
+		<h2 class="text-sm font-semibold tracking-widest text-yellow-500 uppercase">{label}</h2>
+	</div>
+{/snippet}
+
+{#if favorites.length}
+	{@render heading('Favorites')}
+	{@render block(favorites)}
+	{#if rest.length}{@render heading('More projects')}{/if}
+{/if}
+{@render block(rest)}

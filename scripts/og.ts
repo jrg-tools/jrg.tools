@@ -5,7 +5,8 @@ import { PROJECTS } from '../src/lib/projects.ts';
 
 const latest = PROJECTS[0];
 // Hardware shows its isometric drawing, web apps the picture on top of their card.
-const selector = latest.figure ? `#${latest.id} .iso-plate` : `#${latest.id} > div:first-child`;
+const selector =
+	latest.kind === 'hardware' ? `#${latest.id} .iso-plate` : `#${latest.id} > div:first-child`;
 
 const browser = await chromium.launch({ channel: 'chrome' });
 // 1200×630 is the size link previews crop to.
@@ -19,7 +20,7 @@ await page.addStyleTag({
 	content: `${selector} { position: fixed !important; inset: 0; z-index: 9999; margin: 0; border: 0;
 		display: grid; place-items: center; background: #fff; }
 		${selector} .iso-plate-corners { display: none; }
-		${latest.figure ? `${selector} .iso-svg { height: 600px; width: auto; }` : `${selector} > * { zoom: 1.6; }`}`
+		${latest.kind === 'hardware' ? `${selector} .iso-svg { height: 600px; max-height: none; width: auto; }` : `${selector} > * { zoom: 1.6; }`}`
 });
 await page.waitForTimeout(1500); // let the drawing settle its opening animation
 await page.screenshot({ path: 'static/og.png' });

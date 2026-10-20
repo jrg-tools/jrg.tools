@@ -88,3 +88,8 @@ pids/
 # Local development
 .temp/
 .tmp/
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
