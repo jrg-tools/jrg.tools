@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1
 
-# Debian (glibc) + Node 24, pnpm from `packageManager` via corepack (as in jrg-life).
-FROM node:24-bookworm-slim AS base
+# Debian (glibc) + Node 26. Node 25+ no longer ships corepack, so pnpm is installed
+# at the version pinned in `packageManager` (keep the two in sync).
+FROM node:26-bookworm-slim AS base
 WORKDIR /app
-RUN corepack enable
+RUN npm install -g pnpm@11.13.1
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 FROM base AS build
@@ -22,7 +23,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 	pnpm install --frozen-lockfile --prod --store-dir /pnpm/store \
 	&& mkdir -p /app/db
 
-FROM node:24-bookworm-slim AS runtime
+FROM node:26-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
 	PORT=80 \
